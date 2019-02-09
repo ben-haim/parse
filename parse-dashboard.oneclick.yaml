@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parse-dashboard-config
+  namespace: default
+data:
+  user: "admin"
+  pass: "parse@123!"
+  appName: Parse Server
+  iconsFolder: "icons"
+  serverURL: http://parse-server.myhost.io
+  
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: parse-dashboard
+spec:
+  selector:
+    matchLabels:
+      k8s-app: parse-dashboard
+  template:
+    metadata:
+      labels:
+        k8s-app: parse-dashboard
+    spec:
+      containers:
+      - name: parse-dashboard
+        image: parseplatform/parse-dashboard
+        ports:
+        - containerPort: 4040
+        env:
+          # - name: MOUNT_PATH
+          #   valueFrom:
+          #     configMapKeyRef:
+          #       name: parse-dashboard-config
+          #       key: mountPath
+          - name: PARSE_DASHBOARD_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                name: parse-dashboard-config
+                key: serverURL
+          - name: PARSE_DASHBOARD_USER_ID
+            valueFrom:
+              configMapKeyRef:
+                name: parse-dashboard-config
+                key: user
+          - name: PARSE_DASHBOARD_USER_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: parse-dashboard-config
+                key: pass             
+          - name: PARSE_DASHBOARD_APP_ID
+            valueFrom:
+              configMapKeyRef:
+                name: parse-server-config
+                key: appId              
+          - name: PARSE_DASHBOARD_MASTER_KEY
+            valueFrom:
+                configMapKeyRef:
+                  name: parse-server-config
+                  key: masterKey
+          - name: PARSE_DASHBOARD_APP_NAME
+            valueFrom:
+                configMapKeyRef:
+                  name: parse-dashboard-config
+                  key: appName
+          - name: PARSE_DASHBOARD_ALLOW_INSECURE_HTTP
+            value: "true"
+        
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: parse-dashboard
+spec:
+  selector:
+    k8s-app: parse-dashboard
+  ports:
+  - port: 4040
+    targetPort: 4040
+    protocol: TCP
+  type: NodePort

@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: parse-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  # tls:
+  # - hosts:
+  #   - cafe.example.com
+  #   secretName: default-server-secret
+  rules:
+  - host: parse-server.myhost.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: parse-server
+          servicePort: 1337
+  - host: parse-dashboard.myhost.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: parse-dashboard
+          servicePort: 4040
