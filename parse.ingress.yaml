@@ -10,17 +10,17 @@ spec:
   #   - cafe.example.com
   #   secretName: default-server-secret
   rules:
-  - host: parse-server.myhost.io
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: parse-server
-          servicePort: 1337
-  - host: parse-dashboard.myhost.io
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: parse-dashboard
-          servicePort: 4040
+    - host: parse-server.myhost.home
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: parse-server
+              servicePort: 1337
+    - host: parse-dashboard.myhost.home
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: parse-dashboard
+              servicePort: 4040

@@ -1,0 +1,15 @@
+version: '3'
+services:
+  parse-dashboard:
+    image: 'parseplatform/parse-dashboard'
+    ports:
+      - '4040:4040'
+    environment:
+      - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=true
+      - PARSE_DASHBOARD_SERVER_URL=http://parse-server.myhost.io:31992
+      - PARSE_DASHBOARD_MASTER_KEY=parse-app-master-key@k8s
+      - PARSE_DASHBOARD_APP_ID=parse-app-id
+      - PARSE_DASHBOARD_APP_NAME=Parse Server
+      - PARSE_DASHBOARD_USER_ID=admin
+      - PARSE_DASHBOARD_USER_PASSWORD=parse@123!
+      - MOUNT_PATH=/dashboard/

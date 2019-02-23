@@ -7,11 +7,11 @@ data:
   databaseURI: "mongodb://mongodb-service-master,mongodb-service-replica-1,mongodb-service-replica-2:27017/db?replicaSet=rs0"
   appId: "parse-app-id"
   masterKey: parse-app-master-key@k8s
+  readOnlyMasterKey: parse-app-readOnly-master-key@k8s
   mountPath: /
   port: "1337"
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,40 +20,45 @@ spec:
   selector:
     matchLabels:
       app: parse-server
+  replicas: 3
   template:
     metadata:
       labels:
         app: parse-server
     spec:
       containers:
-      - name: parse-server
-        image: parseplatform/parse-server
-        ports:
-        - containerPort: 1337
-        env:
-          - name: PARSE_SERVER_APPLICATION_ID
-            valueFrom:
-              configMapKeyRef:
-                name: parse-server-config
-                key: appId
-          - name: PARSE_SERVER_DATABASE_URI
-            valueFrom:
-              configMapKeyRef:
-                name: parse-server-config
-                key: databaseURI
-          - name: PARSE_SERVER_MOUNT_PATH
-            valueFrom:
-              configMapKeyRef:
-                name: parse-server-config
-                key: mountPath              
-          - name: PARSE_SERVER_MASTER_KEY
-            valueFrom:
+        - name: parse-server
+          image: parseplatform/parse-server
+          ports:
+            - containerPort: 1337
+          env:
+            - name: PARSE_SERVER_APPLICATION_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: parse-server-config
+                  key: appId
+            - name: PARSE_SERVER_DATABASE_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: parse-server-config
+                  key: databaseURI
+            - name: PARSE_SERVER_MOUNT_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: parse-server-config
+                  key: mountPath
+            - name: PARSE_SERVER_MASTER_KEY
+              valueFrom:
                 configMapKeyRef:
                   name: parse-server-config
                   key: masterKey
+            - name: PARSE_SERVER_READ_ONLY_MASTER_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: parse-server-config
+                  key: readOnlyMasterKey
 
 ---
-
 kind: Service
 apiVersion: v1
 metadata:
@@ -64,7 +69,7 @@ spec:
   selector:
     app: parse-server
   ports:
-  - port: 1337
-    targetPort: 1337
-    protocol: TCP
+    - port: 1337
+      targetPort: 1337
+      protocol: TCP
   type: NodePort
