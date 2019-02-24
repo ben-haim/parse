@@ -4,12 +4,18 @@ metadata:
   name: parse-dashboard-config
   namespace: default
 data:
-  user: "admin"
-  pass: "parse@123!"
-  appName: Parse Server
+  appName: Parse App
   iconsFolder: "icons"
-  serverURL: http://parse-server.myhost.io:31992
-
+  serverURL: http://parse-server.myhost.home
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: parse-dashboard-secret
+data:
+  user: cGFyc2VhZG1pbg==
+  pass: M2t1Z2RHb1Q3eVg5THhYaGcwcHE=
+  cookieSessionSecret: bEpiV3NiM0RQakc3T0RrNTE2bHA=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -19,7 +25,7 @@ spec:
   selector:
     matchLabels:
       k8s-app: parse-dashboard
-  replicas: 3
+  replicas: 2
   template:
     metadata:
       labels:
@@ -43,29 +49,34 @@ spec:
                   key: serverURL
             - name: PARSE_DASHBOARD_USER_ID
               valueFrom:
-                configMapKeyRef:
-                  name: parse-dashboard-config
+                secretKeyRef:
+                  name: parse-dashboard-secret
                   key: user
             - name: PARSE_DASHBOARD_USER_PASSWORD
               valueFrom:
-                configMapKeyRef:
-                  name: parse-dashboard-config
+                secretKeyRef:
+                  name: parse-dashboard-secret
                   key: pass
             - name: PARSE_DASHBOARD_APP_ID
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: appId
             - name: PARSE_DASHBOARD_MASTER_KEY
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: masterKey
             - name: PARSE_DASHBOARD_APP_NAME
               valueFrom:
                 configMapKeyRef:
                   name: parse-dashboard-config
                   key: appName
+            - name: PARSE_DASHBOARD_COOKIE_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: parse-dashboard-secret
+                  key: cookieSessionSecret
             - name: PARSE_DASHBOARD_ALLOW_INSECURE_HTTP
               value: "true"
 

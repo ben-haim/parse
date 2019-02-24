@@ -4,13 +4,22 @@ metadata:
   name: parse-server-config
   namespace: default
 data:
-  databaseURI: "mongodb://mongodb-service-master,mongodb-service-replica-1,mongodb-service-replica-2:27017/db?replicaSet=rs0"
-  appId: "parse-app-id"
-  masterKey: parse-app-master-key@k8s
-  readOnlyMasterKey: parse-app-readOnly-master-key@k8s
+  # databaseURI: "mongodb://mongodb-service-master,mongodb-service-replica-1,mongodb-service-replica-2:27017/db?replicaSet=rs0"
+  # appId: "parse-app-id"
+  # masterKey: parse-app-master-key@k8s
+  # readOnlyMasterKey: parse-app-readOnly-master-key@k8s
   mountPath: /
-  port: "1337"
 
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: parse-server-secret
+data:
+  databaseURI: bW9uZ29kYjovL21vbmdvZGItc2VydmljZS1tYXN0ZXIsbW9uZ29kYi1zZXJ2aWNlLXJlcGxpY2EtMSxtb25nb2RiLXNlcnZpY2UtcmVwbGljYS0yOjI3MDE3L2RiP3JlcGxpY2FTZXQ9cnMw
+  appId: bkpBV0l4ODBGZm5xZm9LVnRSczE=
+  masterKey: MlV6NnR5elFmVHZtRjN3TkVQdXo=
+  readOnlyMasterKey: aHJ3Uzdud0pTR0pDaE1WYlgxRW4=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -34,13 +43,13 @@ spec:
           env:
             - name: PARSE_SERVER_APPLICATION_ID
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: appId
             - name: PARSE_SERVER_DATABASE_URI
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: databaseURI
             - name: PARSE_SERVER_MOUNT_PATH
               valueFrom:
@@ -49,13 +58,13 @@ spec:
                   key: mountPath
             - name: PARSE_SERVER_MASTER_KEY
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: masterKey
             - name: PARSE_SERVER_READ_ONLY_MASTER_KEY
               valueFrom:
-                configMapKeyRef:
-                  name: parse-server-config
+                secretKeyRef:
+                  name: parse-server-secret
                   key: readOnlyMasterKey
 
 ---
