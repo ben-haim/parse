@@ -6,7 +6,7 @@ metadata:
 data:
   appName: Parse App
   iconsFolder: "icons"
-  serverURL: http://parse-server.myhost.home
+  serverURL: http://parse-server.myhost.io
 ---
 apiVersion: v1
 kind: Secret

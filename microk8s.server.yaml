@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: for-http-fobbiden-nginx
+spec:
+  selector:
+    name: nginx-ingress-microk8s
+  type: NodePort
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 44300
+      targetPort: 443
